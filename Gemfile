@@ -1,62 +1,73 @@
 source 'https://rubygems.org'
-
+ruby '3.2.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.0'
-# Use sqlite3 as the database for Active Record
-group :development do
-  gem 'sqlite3'
+gem 'rails', '~> 7.1.2'
+
+# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
+gem 'sprockets-rails'
+
+# Use mysql2 as the database for Active Record
+group :development, :production do
+  gem 'mysql2', '~> 0.5.5'
 end
 
-group :production do
-  gem 'mysql2'
+group :test do
+  gem 'sqlite3', '~> 1.6.0'
 end
 
-# CORS Working !
-gem 'rack-cors', require: 'rack/cors'
+# CORS support
+gem 'rack-cors'
 
-# Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
-# Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
-# Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.1.0'
-# See https://github.com/sstephenson/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
+# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+gem 'importmap-rails'
 
-# Use jquery as the JavaScript library
-gem 'jquery-rails'
-# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.0'
-# bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', '~> 0.4.0', group: :doc
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem 'turbo-rails'
 
-# Use ActiveModel has_secure_password
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem 'stimulus-rails'
+
+# Bundle and process CSS [https://github.com/rails/cssbundling-rails]
+gem 'cssbundling-rails'
+
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem 'jbuilder'
+
+# Use Redis adapter to run Action Cable in production
+# gem 'redis', '~> 4.0'
+
+# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
+# gem 'kredis'
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem 'bcrypt', '~> 3.1.7'
 
-# Use Unicorn as the app server
-# gem 'unicorn'
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: %i[ mingw mswin x64_mingw jruby ]
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+# Reduces boot times through caching; required in config/boot.rb
+gem 'bootsnap', require: false
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem 'debug', platforms: %i[ mri mingw x64_mingw ]
+  gem 'rspec-rails', '~> 6.0.0'
+end
 
-  # Access an IRB console on exception pages or by using <%= console %> in views
-  gem 'web-console', '~> 2.0'
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem 'web-console'
 
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
+  # gem 'rack-mini-profiler'
+
+  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   gem 'spring'
-
-  gem 'rspec-rails'
 end
 
 # Carrierwave to handle images
-gem 'carrierwave'
+gem 'carrierwave', '~> 3.0'
 
 # MiniMagick to apply resizes to images (CarrierWave works with this)
-gem 'mini_magick'
+gem 'mini_magick', '~> 4.12'
