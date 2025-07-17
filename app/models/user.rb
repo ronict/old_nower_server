@@ -1,70 +1,70 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true,
                     format: {
-                      with: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/
+                      with: /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}\z/
                     }
   validates :name, presence: true
   validates :gender, presence: true
   validate :gender_correct_value
   validates :birthday, presence: true
   validate :birthday_correct_value
-  #validates :password, presence: true
-  validates :password, confirmation: true
-  validates_presence_of :password_confirmation, if: :password_changed?
+  validates :password, confirmation: true, if: :password_changed?
+  validates :password_confirmation, presence: true, if: :password_changed?
 
-  has_many :redemptions
-  has_one :facebook_auth, dependent: :delete
+  has_many :redemptions, dependent: :destroy
+  has_one :facebook_auth, dependent: :destroy
 
   before_save :encrypt_password
 
   def self.authenticate(email, password)
-    user = User.find_by email: email
+    user = User.find_by(email: email)
     return nil unless user
     return user if user.password == User.encrypt(password, user.salt)
   end
 
   def active_redemptions
-    (Redemption.where user_id: id, redeemed: false).count
+    redemptions.where(redeemed: false).count
   end
 
   def facebook_token
-    return nil if !self.facebook_auth
-    self.facebook_auth.token
+    facebook_auth&.token
   end
 
   def facebook_id
-    return nil if !self.facebook_auth
-    self.facebook_auth.facebook_id
+    facebook_auth&.facebook_id
   end
 
   private
+
   def encrypt_password
-    if self.new_record?
+    if new_record?
       self.salt = generate_salt
-      self.password = User.encrypt self.password, self.salt
+      self.password = User.encrypt(password, salt)
     end
   end
 
   def self.encrypt(password, salt)
-    return Digest::SHA2.hexdigest "#{password}#{salt}"
+    Digest::SHA2.hexdigest("#{password}#{salt}")
   end
 
   def generate_salt
-    return Digest::SHA2.hexdigest "#{SecureRandom.hex 8}Nower#{Time.now}"
+    Digest::SHA2.hexdigest("#{SecureRandom.hex(8)}Nower#{Time.current}")
   end
 
   def gender_correct_value
-    if gender != "m" && gender != "f"
+    unless %w[m f].include?(gender)
       errors.add(:gender, I18n.t('errors.user.gender.is_invalid'))
     end
   end
 
   def birthday_correct_value
-    return if !birthday
-    unless birthday <= 12.years.ago
+    return unless birthday
+
+    if birthday > 12.years.ago
       errors.add(:birthday, I18n.t('errors.user.birthday.too_young'))
     end
-    unless birthday >= 100.years.ago
+
+    if birthday < 100.years.ago
       errors.add(:birthday, I18n.t('errors.user.birthday.too_old'))
     end
   end
